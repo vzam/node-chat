@@ -1,0 +1,10 @@
+{
+    "name": "@vichat/lib",
+    "version": "1.0.0",
+    "private": true,
+    "main": "src/",
+    "devDependencies": {},
+    "scripts": {
+        "test": "jest"
+    }
+}

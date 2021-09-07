@@ -1,0 +1,21 @@
+{
+    "name": "@vichat/web",
+    "private": true,
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "lib": "1.0.0"
+    },
+    "scripts": {
+        "dev": "parcel src/index.html",
+        "build": "parcel build src/index.html"
+    },
+    "devDependencies": {
+        "parcel-bundler": "^1.12.5"
+    }
+}
