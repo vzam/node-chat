@@ -20,6 +20,7 @@ export class ClientStore {
     /**
      * Adds a client by web socket.
      * @param ws
+     * @param languageCode The language of the client.
      * @throws When the web socket is already registered.
      * @returns The client id.
      */

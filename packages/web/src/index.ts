@@ -1,6 +1,7 @@
 import {
     AuthorizedMessage,
     ClientMux,
+    GetLanguagesRequest,
     JoinedChannelEvent,
     LeftChannelEvent,
     Message,
@@ -17,3 +18,7 @@ const muxAdapter = new ClientMuxAdapter(ws, mux);
 muxAdapter.connect();
 
 export const store = new Store(muxAdapter, ws);
+
+ws.addEventListener('open', () => {
+    store.send<GetLanguagesRequest>('get-languages', {});
+});

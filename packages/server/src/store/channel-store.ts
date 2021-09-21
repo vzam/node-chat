@@ -1,6 +1,7 @@
 type Client = {
     clientId: number;
     nickname: string;
+    languageCode: string;
 };
 
 type Channel = {
@@ -41,9 +42,9 @@ export class ChannelStore {
      * @param nickname The nickname of the client.
      * @param channelName The channel name.
      */
-    addClient(clientId: number, nickname: string, channelName: string): void {
+    addClient(clientId: number, nickname: string, languageCode: string, channelName: string): void {
         const [channel] = this.#findOrCreateChannel(channelName);
-        this.#findOrAddClientToChannel(channel, clientId, nickname);
+        this.#findOrAddClientToChannel(channel, clientId, nickname, languageCode);
     }
 
     /**
@@ -90,12 +91,12 @@ export class ChannelStore {
         return [channel, this.#channels.push(channel) - 1];
     }
 
-    #findOrAddClientToChannel(channel: Channel, clientId: number, nickname: string): number {
+    #findOrAddClientToChannel(channel: Channel, clientId: number, nickname: string, languageCode: string): number {
         const index = channel.clients.findIndex((e) => e.clientId === clientId);
         if (index !== -1) {
             return index;
         }
-        return channel.clients.push({ clientId, nickname }) - 1;
+        return channel.clients.push({ clientId, nickname, languageCode }) - 1;
     }
 
     #removeClientFromChannel(channel: Channel, clientId: number): void {

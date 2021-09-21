@@ -1,3 +1,5 @@
+import { Language } from '@vichat/lib';
+
 const templateLoginForm = document.createElement('template');
 templateLoginForm.innerHTML = `
 <style>
@@ -16,12 +18,17 @@ templateLoginForm.innerHTML = `
     <div class="field">
         <input type="text" name="nickname" class="nickname" />
         <label for="nickname">Nickname</label>
-    </div>
+
+        <select name="languageCode" class="languageCode">
+        </select>
+        <label for="languageCode">Language</label>
+        </div>
     <button type="submit" class="submit">Ok</button>
 </form>`;
 
 export type LoginData = {
     nickname: string;
+    languageCode: string;
 };
 
 export class LoginForm extends HTMLElement {
@@ -34,10 +41,18 @@ export class LoginForm extends HTMLElement {
 
     #form: HTMLFormElement | null = null;
     #nickname: HTMLInputElement | null = null;
+    #languageCode: HTMLSelectElement | null = null;
     #submit: HTMLButtonElement | null = null;
 
     get nickname(): string {
         return this.#nickname?.value ?? '';
+    }
+
+    get languageCode(): string | undefined {
+        const index = this.#languageCode?.selectedIndex;
+        if (index === undefined || index === -1) return undefined;
+
+        return (this.#languageCode!.children[index] as HTMLOptionElement).value;
     }
 
     get allowSubmit(): boolean {
@@ -50,13 +65,29 @@ export class LoginForm extends HTMLElement {
         }
     }
 
+    set languages(langs: Language[]) {
+        if (!this.#languageCode) return;
+
+        const options = langs.map((lang) => {
+            const el = document.createElement('option');
+            el.setAttribute('value', lang.code);
+            el.textContent = lang.name;
+            return el;
+        });
+        this.#languageCode.replaceChildren(...options);
+    }
+
     connectedCallback(): void {
         this.#root.appendChild(templateLoginForm.content.cloneNode(true));
         this.#form = this.#root.querySelector('.login-form');
         this.#nickname = this.#root.querySelector('.nickname');
+        this.#languageCode = this.#root.querySelector('.languageCode');
         this.#submit = this.#root.querySelector('.submit');
 
         this.#nickname?.addEventListener('keyup', (e) => {
+            this.allowSubmit = Array.from(this.#formErrors()).length === 0;
+        });
+        this.#languageCode?.addEventListener('change', (e) => {
             this.allowSubmit = Array.from(this.#formErrors()).length === 0;
         });
         this.#form?.addEventListener('submit', (e) => {
@@ -68,7 +99,7 @@ export class LoginForm extends HTMLElement {
                 return;
             }
 
-            const loginData: LoginData = { nickname: this.nickname };
+            const loginData: LoginData = { nickname: this.nickname, languageCode: this.languageCode! };
             this.dispatchEvent(new CustomEvent('submit', { detail: loginData }));
         });
 
@@ -78,6 +109,9 @@ export class LoginForm extends HTMLElement {
     *#formErrors(): Iterable<Error> {
         if ((this.nickname.length ?? 0) === 0) {
             yield new Error(`nickname must not be empty`);
+        }
+        if (this.languageCode === undefined) {
+            yield new Error(`language code must be selected`);
         }
     }
 }

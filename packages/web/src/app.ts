@@ -1,12 +1,14 @@
 import { LoginData, LoginForm } from './login-form';
 import { Channel } from './channel';
 import {
+    GetLanguagesRequest,
     JoinChannelRequest,
     JoinedChannelEvent,
     LeaveChannelRequest,
     LeftChannelEvent,
     Message,
     SendMessageRequest,
+    SupportedLanguagesEvent,
     TextMessageEvent,
 } from '@vichat/lib';
 import { store } from '.';
@@ -35,6 +37,7 @@ class App extends HTMLElement {
 
         this.#app = this.#root.querySelector('.app');
 
+        store.mux.onMessage<SupportedLanguagesEvent>('supported-languages', this.#handleSupportedLanguages);
         store.mux.onMessage<JoinedChannelEvent>('joined-channel', this.#handleJoinedChannel);
         store.mux.onMessage<LeftChannelEvent>('left-channel', this.#handleLeftChannel);
         store.mux.onMessage<TextMessageEvent>('message', this.#handleMessageReceived);
@@ -47,6 +50,7 @@ class App extends HTMLElement {
     #joinChannel = (ev: CustomEvent<LoginData>): void => {
         store.send<JoinChannelRequest>('join-channel', {
             nickname: ev.detail.nickname,
+            languageCode: ev.detail.languageCode,
         });
     };
 
@@ -58,6 +62,12 @@ class App extends HTMLElement {
 
     #leaveChannel = (ev: CustomEvent): void => {
         store.send<LeaveChannelRequest>('leave-channel', {});
+    };
+
+    #handleSupportedLanguages = (message: Message<SupportedLanguagesEvent>) => {
+        if (!this.#loginForm) return;
+
+        this.#loginForm.languages = message.data.languages;
     };
 
     #handleJoinedChannel = (message: Message<JoinedChannelEvent>) => {

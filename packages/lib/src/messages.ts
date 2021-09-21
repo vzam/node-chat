@@ -1,8 +1,16 @@
+import { Language } from '.';
+
+export type GetLanguagesRequest = Record<string, unknown>;
+export type SupportedLanguagesEvent = {
+    languages: Language[];
+};
+
 /**
  * Client request to join a channel.
  */
 export type JoinChannelRequest = {
     nickname: string;
+    languageCode: string;
 };
 
 /**
@@ -13,6 +21,7 @@ export type JoinedChannelEvent = {
     nickname: string;
     clientId: number;
     token: string;
+    languageCode: string;
 };
 
 /**
@@ -46,9 +55,9 @@ export type TextMessageEvent = {
 /**
  * Possible messages which the client may send.
  */
-export type ClientMessage = 'join-channel' | 'leave-channel' | 'send-message';
+export type ClientMessage = 'get-languages' | 'join-channel' | 'leave-channel' | 'send-message';
 
 /**
  * Possible messages which the server may send.
  */
-export type ServerMessage = 'joined-channel' | 'left-channel' | 'message';
+export type ServerMessage = 'supported-languages' | 'joined-channel' | 'left-channel' | 'message';
